@@ -1,0 +1,28 @@
+
+[filter]
+  pattern = ["1:2525017", "1:10000001", "1:2525016"]
+
+[geoip]
+  geodb = "./GeoLite2-City.mmdb"
+
+[mail]
+  server = "127.0.0.1:25"
+
+  [mail.from]
+    address = "snort@localhost"
+    name = "snort"
+
+  [mail.to]
+    address = "root@localhost"
+    name = "root"
+
+[reader]
+  fileprefix = "snort.u2"
+  path = "/var/log/snort"
+
+[sidmap]
+  maps = ["/etc/snort/sid-msg.map"]
+
+[slack]
+  channel = "ids"
+  token = ""
