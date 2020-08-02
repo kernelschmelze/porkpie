@@ -88,3 +88,109 @@ sudo chmod 755 /lib/systemd/system/porkpie.service
 sudo systemctl enable porkpie.service
 sudo systemctl start porkpie
 ```
+
+### extend porkpie with your own cool plugin
+
+``` go
+package yourplugin
+
+import (
+
+	"github.com/kernelschmelze/pkg/plugin/plugin/base"
+	"github.com/kernelschmelze/porkpie/ids"
+
+	log "github.com/kernelschmelze/pkg/logger"
+)
+
+type config struct {
+	Key string
+}
+
+type Plugin struct {
+	*plugin.PluginBase
+}
+
+func init() {
+	New()
+}
+
+func New() *Plugin {
+
+	p := &Plugin{
+		plugin.NewPluginWithPriority(950),
+	}
+
+	err := p.Init(plugin.PluginConfig{
+		p,
+		p.start, 	 // plugin start callback
+		p.stop, 	 // plugin stop callback
+		p.configure, // config changed callback
+		p.do,		 // do something with the snort record
+		&config{},	 // your config object
+	})
+
+	if err != nil {
+		log.Errorf("init plugin '%T' failed, err=%s", p, err)
+	}
+
+	return p
+}
+
+func (p *Plugin) start() error {
+
+	log.Infof("start %T", p)
+
+	return nil
+}
+
+func (p *Plugin) stop() error {
+
+	log.Infof("stop %T", p)
+
+	return nil
+}
+
+func (p *Plugin) configure(v interface{}) {
+
+	if config, ok := v.(*config); ok {
+
+		// do some cool stuff with your config.Key
+
+	}
+
+}
+
+func (p *Plugin) do(v interface{}) error {
+
+	switch data := v.(type) {
+
+	case *ids.Record:
+
+		if !data.IsValid() || data.Drop {
+			return nil
+		}
+
+		// do some cool stuff with the snort record
+
+	}
+
+	return nil
+}
+
+
+```
+
+### import your cool plugin
+
+``` go
+package main
+
+import (
+	...
+
+	_ "github.com/kernelschmelze/porkpie/plugin/yourplugin"	
+
+	...
+)
+
+```
