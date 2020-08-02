@@ -92,6 +92,19 @@ sudo systemctl start porkpie
 ### extend porkpie with your own cool plugin
 
 ``` go
+package main
+
+import (
+	...
+
+	_ "github.com/kernelschmelze/porkpie/plugin/yourplugin"	
+
+	...
+)
+
+```
+
+``` go
 package yourplugin
 
 import (
@@ -177,20 +190,5 @@ func (p *Plugin) do(v interface{}) error {
 	return nil
 }
 
-
-```
-
-### import your cool plugin
-
-``` go
-package main
-
-import (
-	...
-
-	_ "github.com/kernelschmelze/porkpie/plugin/yourplugin"	
-
-	...
-)
 
 ```
