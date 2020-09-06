@@ -122,13 +122,31 @@ func (p *Plugin) do(v interface{}) error {
 			data.SIDMap.Msg,
 		)
 
-		var payload string
+		// var payload string
 
-		body := fmt.Sprintf("%s\n%d:%d %s %s\n%s -> %s %s %s\n\n%s",
+		// body := fmt.Sprintf("%s\n%d:%d %s %s\n%s -> %s %s %s\n\n%s",
+		// 	timestamp.Format("2006-01-02 15:04:05.000000"),
+		// 	data.GetGID(), data.GetSID(), data.GetProtocol(), data.SIDMap.Classification,
+		// 	data.GetSource(), data.GetDestination(), data.Country, data.City,
+		// 	payload,
+		// )
+
+		body := fmt.Sprintf("%s\n%s %s -> %s   %s %s\n%s\n\n gid: %d sid: %d priority: %d impact: %d",
 			timestamp.Format("2006-01-02 15:04:05.000000"),
-			data.GetGID(), data.GetSID(), data.GetProtocol(), data.SIDMap.Classification,
-			data.GetSource(), data.GetDestination(), data.Country, data.City,
-			payload,
+
+			data.GetProtocol(),
+			data.GetSource(),
+			data.GetDestination(),
+			data.Country,
+			data.City,
+
+			data.SIDMap.Classification,
+
+			data.GetGID(),
+			data.GetSID(),
+
+			data.GetPriority(),
+			data.GetImpact(),
 		)
 
 		if err := SendMail(config.Server, from, subject, body, []string{to}); err != nil {
