@@ -131,7 +131,7 @@ func (p *Plugin) do(v interface{}) error {
 		// 	payload,
 		// )
 
-		body := fmt.Sprintf("%s\n%s %s -> %s   %s %s\n%s\n\n gid: %d sid: %d priority: %d impact: %d",
+		body := fmt.Sprintf("%s\n\n%s %s -> %s   %s %s\n%s\ngid: %d sid: %d priority: %d impact: %d",
 			timestamp.Format("2006-01-02 15:04:05.000000"),
 
 			data.GetProtocol(),
