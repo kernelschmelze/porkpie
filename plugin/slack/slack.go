@@ -130,7 +130,7 @@ func (p *Plugin) do(v interface{}) error {
 				data.City,
 			),
 
-			Text: fmt.Sprintf("%s\n\n gid: %d sid: %d priority: %d impact: %d",
+			Text: fmt.Sprintf("%s\n\ngid: %d sid: %d priority: %d impact: %d",
 
 				data.SIDMap.Classification,
 
