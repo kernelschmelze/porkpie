@@ -5,6 +5,7 @@ import (
 	_ "github.com/kernelschmelze/porkpie/plugin/geoip"
 	_ "github.com/kernelschmelze/porkpie/plugin/logger"
 	_ "github.com/kernelschmelze/porkpie/plugin/mail"
+	_ "github.com/kernelschmelze/porkpie/plugin/pushover"
 	_ "github.com/kernelschmelze/porkpie/plugin/reader"
 	_ "github.com/kernelschmelze/porkpie/plugin/sidmap"
 	_ "github.com/kernelschmelze/porkpie/plugin/slack"

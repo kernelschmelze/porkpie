@@ -1,6 +1,6 @@
 ### porkpie
 
-Porkpie is a snort unified log spool reader that translates snort events into human readable form and delivers them as slack and local mail messages. Configuration settings are applied in real time, changes to the sidmap file are automatically detected and re-read. There is no need to restart the program.
+Porkpie is a snort unified log spool reader that translates snort events into human readable form and delivers them as slack, pushover and local mail messages. Configuration settings are applied in real time, changes to the sidmap file are automatically detected and re-read. There is no need to restart the program.
   
 
 ### build from source
@@ -52,6 +52,10 @@ total 70096
 [slack]
   channel = "ids"
   token = "<your slack token>"
+
+[pushover]
+  app = "<your API token>"
+  user = "<your user key>"
 
 ```
 

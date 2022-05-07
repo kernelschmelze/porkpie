@@ -26,3 +26,7 @@
 [slack]
   channel = "ids"
   token = ""
+
+[pushover]
+  app = "API Token"
+  user = "Your User Key"

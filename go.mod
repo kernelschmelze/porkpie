@@ -14,6 +14,7 @@ require (
 require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/gregdel/pushover v1.1.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.9.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/rs/zerolog v1.26.1 // indirect
