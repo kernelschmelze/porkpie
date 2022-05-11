@@ -141,6 +141,18 @@ func (p *Plugin) run() {
 			app = po.New(config.App)
 			recipient = po.NewRecipient(config.User)
 
+			go func(app *po.Pushover, recipient *po.Recipient) {
+
+				if app == nil || recipient == nil {
+					return
+				}
+
+				if _, err := app.GetRecipientDetails(recipient); err != nil {
+					log.Errorf("%T get recipient details failed, err=%s", p, err)
+				}
+
+			}(app, recipient)
+
 		case data := <-p.data:
 
 			if app == nil || recipient == nil {
