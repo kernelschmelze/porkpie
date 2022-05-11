@@ -3,7 +3,7 @@ package slack
 import (
 	"fmt"
 	"strings"
-	"sync"
+	"time"
 
 	"github.com/kernelschmelze/pkg/plugin/plugin/base"
 	"github.com/kernelschmelze/porkpie/ids"
@@ -20,9 +20,9 @@ type config struct {
 
 type Plugin struct {
 	*plugin.PluginBase
-	api     *slack.Client
-	channel string
-	guard   sync.RWMutex
+	data  chan *ids.Record
+	setup chan *config
+	kill  chan struct{}
 }
 
 func init() {
@@ -33,9 +33,9 @@ func New() *Plugin {
 
 	p := &Plugin{
 		plugin.NewPluginWithPriority(900),
-		nil,
-		"",
-		sync.RWMutex{},
+		make(chan *ids.Record, 50),
+		make(chan *config, 10),
+		make(chan struct{}),
 	}
 
 	err := p.Init(plugin.PluginConfig{
@@ -58,6 +58,8 @@ func (p *Plugin) start() error {
 
 	log.Infof("start %T", p)
 
+	go p.run()
+
 	return nil
 }
 
@@ -65,26 +67,15 @@ func (p *Plugin) stop() error {
 
 	log.Infof("stop %T", p)
 
+	close(p.kill)
+
 	return nil
 }
 
 func (p *Plugin) configure(v interface{}) {
 
 	if config, ok := v.(*config); ok {
-
-		channel := config.Channel
-		channel = strings.TrimSpace(channel)
-		channel = strings.TrimLeft(channel, "#")
-
-		if p.api == nil && (len(channel) == 0 || len(config.Token) == 0) {
-			return
-		}
-
-		p.guard.Lock()
-		p.api = slack.New(config.Token)
-		p.channel = channel
-		p.guard.Unlock()
-
+		p.setup <- config
 	}
 
 }
@@ -99,15 +90,6 @@ func (p *Plugin) do(v interface{}) error {
 			return nil
 		}
 
-		p.guard.RLock()
-		channel := p.channel
-		api := p.api
-		p.guard.RUnlock()
-
-		if api == nil || len(channel) == 0 {
-			return nil
-		}
-
 		// ignore internal packet
 		ip := data.GetDestination()
 		if !ids.IsPublicIP(ip) {
@@ -117,59 +99,106 @@ func (p *Plugin) do(v interface{}) error {
 			}
 		}
 
-		timestamp := data.GetTime()
-
-		attachment := slack.Attachment{
-
-			Title: fmt.Sprintf("%s %s -> %s   %s %s",
-
-				data.GetProtocol(),
-				data.GetSource(),
-				data.GetDestination(),
-				data.Country,
-				data.City,
-			),
-
-			Text: fmt.Sprintf("%s\n\ngid: %d sid: %d priority: %d impact: %d",
-
-				data.SIDMap.Classification,
-
-				data.GetGID(),
-				data.GetSID(),
-
-				data.GetPriority(),
-				data.GetImpact(),
-			),
-
-			Pretext: fmt.Sprintf("%s",
-				timestamp.Format("2006-01-02 15:04:05.000000"),
-			),
-		}
-
-		var icon, msg string
-
-		icon = "grey_exclamation"
-
-		msg = data.SIDMap.Msg
-		if len(msg) == 0 {
+		if len(data.SIDMap.Msg) == 0 {
 			return nil
-			msg = "unknown alert"
 		}
 
-		if len(icon) > 0 {
-			msg = ":" + icon + ": " + msg
-		}
-
-		_, _, err := api.PostMessage("#"+channel,
-			slack.MsgOptionText(msg, false),
-			slack.MsgOptionAttachments(attachment),
-		)
-
-		if err != nil {
-			log.Errorf("%T post message failed, err=%s", p, err)
+		select {
+		case p.data <- data:
+		case <-time.After(250 * time.Millisecond):
+			log.Errorf("%T data channel full, drop message", p)
 		}
 
 	}
 
 	return nil
+}
+
+func (p *Plugin) run() {
+
+	var channel string
+	api := (*slack.Client)(nil)
+
+	for {
+
+		select {
+
+		case <-p.kill:
+			return
+
+		case config := <-p.setup:
+
+			if config == nil {
+				continue
+			}
+
+			api = nil
+
+			channel = strings.TrimSpace(config.Channel)
+			channel = strings.TrimLeft(channel, "#")
+
+			if len(channel) == 0 || len(config.Token) == 0 {
+				continue
+			}
+
+			api = slack.New(config.Token)
+
+		case data := <-p.data:
+
+			if api == nil {
+				continue
+			}
+
+			timestamp := data.GetTime()
+
+			attachment := slack.Attachment{
+
+				Title: fmt.Sprintf("%s %s -> %s   %s %s",
+
+					data.GetProtocol(),
+					data.GetSource(),
+					data.GetDestination(),
+					data.Country,
+					data.City,
+				),
+
+				Text: fmt.Sprintf("%s\n\ngid: %d sid: %d priority: %d impact: %d",
+
+					data.SIDMap.Classification,
+
+					data.GetGID(),
+					data.GetSID(),
+
+					data.GetPriority(),
+					data.GetImpact(),
+				),
+
+				Pretext: fmt.Sprintf("%s",
+					timestamp.Format("2006-01-02 15:04:05.000000"),
+				),
+			}
+
+			var icon, msg string
+
+			icon = "grey_exclamation"
+
+			msg = data.SIDMap.Msg
+
+			if len(icon) > 0 {
+				msg = ":" + icon + ": " + msg
+			}
+
+			_, _, err := api.PostMessage("#"+channel,
+				slack.MsgOptionText(msg, false),
+				slack.MsgOptionAttachments(attachment),
+			)
+
+			if err != nil {
+				log.Errorf("%T post message failed, err=%s", p, err)
+			}
+
+		}
+
+	}
+
 }
