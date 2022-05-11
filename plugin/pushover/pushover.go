@@ -2,7 +2,6 @@ package pushover
 
 import (
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/kernelschmelze/pkg/plugin/plugin/base"
@@ -20,12 +19,9 @@ type config struct {
 
 type Plugin struct {
 	*plugin.PluginBase
-	app       *po.Pushover
-	recipient *po.Recipient
-	guard     sync.RWMutex
-	data      chan *ids.Record
-	setup     chan bool
-	kill      chan struct{}
+	data  chan *ids.Record
+	setup chan *config
+	kill  chan struct{}
 }
 
 func init() {
@@ -36,11 +32,8 @@ func New() *Plugin {
 
 	p := &Plugin{
 		plugin.NewPluginWithPriority(902),
-		nil,
-		nil,
-		sync.RWMutex{},
 		make(chan *ids.Record, 50),
-		make(chan bool, 10),
+		make(chan *config, 10),
 		make(chan struct{}),
 	}
 
@@ -81,21 +74,7 @@ func (p *Plugin) stop() error {
 func (p *Plugin) configure(v interface{}) {
 
 	if config, ok := v.(*config); ok {
-
-		p.guard.Lock()
-
-		p.app = nil
-		p.recipient = nil
-
-		if len(config.App) > 0 && len(config.User) > 0 {
-			p.app = po.New(config.App)
-			p.recipient = po.NewRecipient(config.User)
-		}
-
-		p.guard.Unlock()
-
-		p.setup <- true
-
+		p.setup <- config
 	}
 
 }
@@ -146,14 +125,21 @@ func (p *Plugin) run() {
 		case <-p.kill:
 			return
 
-		case <-p.setup:
+		case config := <-p.setup:
 
-			p.guard.RLock()
+			if config == nil {
+				continue
+			}
 
-			app = p.app
-			recipient = p.recipient
+			app = nil
+			recipient = nil
 
-			p.guard.RUnlock()
+			if len(config.App) == 0 || len(config.User) == 0 {
+				continue
+			}
+
+			app = po.New(config.App)
+			recipient = po.NewRecipient(config.User)
 
 		case data := <-p.data:
 
@@ -174,7 +160,12 @@ func (p *Plugin) run() {
 				data.GetImpact(),
 			)
 
-			message := po.NewMessageWithTitle(msg, data.SIDMap.Classification)
+			title := data.SIDMap.Classification
+			if len(title) > po.MessageTitleMaxLength {
+				title = title[:po.MessageTitleMaxLength]
+			}
+
+			message := po.NewMessageWithTitle(msg, title)
 
 			message.Timestamp = data.GetTime().Unix()
 
