@@ -105,9 +105,10 @@ func (p *Plugin) openGeoIP2(file string) {
 
 		log.Infof("%T load file '%s' successfull, took %s", p, file, time.Since(start))
 
-		p.currentFile = file
 		if err = watcher.Add(file, p.openGeoIP2); err != nil {
 			log.Errorf("%T watch file '%s' failed, err=%s", p, p.currentFile, err)
+		} else {
+			p.currentFile = file
 		}
 
 	}
@@ -125,8 +126,10 @@ func (p *Plugin) closeGeoIP2() {
 		p.db.Close()
 		p.db = nil
 
-		watcher.Remove(p.currentFile)
-		p.currentFile = ""
+		if len(p.currentFile) > 0 {
+			watcher.Remove(p.currentFile)
+			p.currentFile = ""
+		}
 
 	}
 
