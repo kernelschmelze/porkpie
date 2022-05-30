@@ -3,6 +3,7 @@ module github.com/kernelschmelze/porkpie
 go 1.18
 
 require (
+	github.com/gregdel/pushover v1.1.0
 	github.com/jasonish/go-unified2 v0.0.0-20170411045547-f12db2c9efe9
 	github.com/kernelschmelze/pkg v0.0.0-20200806152406-47d3701c872a
 	github.com/oschwald/geoip2-golang v1.7.0
@@ -14,7 +15,6 @@ require (
 require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/gregdel/pushover v1.1.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.9.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/rs/zerolog v1.26.1 // indirect
