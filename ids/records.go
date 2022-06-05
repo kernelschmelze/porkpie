@@ -171,3 +171,21 @@ func (r *Record) GetPackets() Packets {
 	return packets
 
 }
+
+func (r *Record) IsLocal() bool {
+
+	if r == nil {
+		return true
+	}
+
+	if ip := r.GetDestination(); IsPublicIP(ip) {
+		return false
+	}
+
+	if ip := r.GetSource(); IsPublicIP(ip) {
+		return false
+	}
+
+	return true
+
+}

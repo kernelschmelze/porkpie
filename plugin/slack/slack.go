@@ -91,12 +91,9 @@ func (p *Plugin) do(v interface{}) error {
 		}
 
 		// ignore internal packet
-		ip := data.GetDestination()
-		if !ids.IsPublicIP(ip) {
-			ip = data.GetSource()
-			if !ids.IsPublicIP(ip) {
-				return nil
-			}
+
+		if data.IsLocal() {
+			return nil
 		}
 
 		if len(data.SIDMap.Msg) == 0 {
