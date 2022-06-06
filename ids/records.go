@@ -174,10 +174,6 @@ func (r *Record) GetPackets() Packets {
 
 func (r *Record) IsLocal() bool {
 
-	if r == nil {
-		return true
-	}
-
 	if ip := r.GetDestination(); IsPublicIP(ip) {
 		return false
 	}
