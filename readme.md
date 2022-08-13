@@ -196,3 +196,25 @@ func (p *Plugin) do(v interface{}) error {
 
 
 ```
+
+### hints
+  
+
+Make sure that the snort output plugin for unified2 is enabled.  
+  
+`snort.conf`  
+
+```conf
+###################################################
+# Step #6: Configure output plugins
+# For more information, see Snort Manual, Configuring Snort - Output Modules
+###################################################
+
+# unified2 
+# Recommended for most installs
+# output unified2: filename merged.log, limit 128, nostamp, mpls_event_types, vlan_event_types
+output unified2: filename snort.u2, limit 128
+
+```  
+  
+ Make sure that porkpie is running in a user context that has read permissions on the snort log directory.  
