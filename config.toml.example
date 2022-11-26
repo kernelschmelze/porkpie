@@ -9,7 +9,7 @@
   # https://iptoasn.com/data/ip2asn-v6.tsv.gz
   # https://iptoasn.com/data/ip2asn-v4.tsv.gz
   # https://iptoasn.com/data/ip2asn-combined.tsv.gz 
-  db ="./ip2asn-combined.tsv.gz"
+  db = "./ip2asn-combined.tsv.gz"
 
 [mail]
   server = "127.0.0.1:25"

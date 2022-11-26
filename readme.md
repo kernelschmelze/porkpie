@@ -32,7 +32,7 @@ total 70096
   geodb = "./GeoLite2-City.mmdb"
 
 [ip2asn]
-	db ="./ip2asn-combined.tsv.gz"
+  db = "./ip2asn-combined.tsv.gz"
 
 [mail]
   server = "127.0.0.1:25"
