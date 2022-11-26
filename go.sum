@@ -16,6 +16,10 @@ github.com/jasonish/go-unified2 v0.0.0-20170411045547-f12db2c9efe9 h1:vGVInZq3xF
 github.com/jasonish/go-unified2 v0.0.0-20170411045547-f12db2c9efe9/go.mod h1:MfYhateD/hhzL8B3nFK/oRAHTKJX2ZbbNMc6J0EqtvM=
 github.com/kernelschmelze/pkg v0.0.0-20200806152406-47d3701c872a h1:TfAb4bQnXzWMpWQee9hsnpkvtqQWL0+Syh+cp2TTpSE=
 github.com/kernelschmelze/pkg v0.0.0-20200806152406-47d3701c872a/go.mod h1:oLNUqpEfAWYBcxbJHPu/gG0LeJq1mCbnw4NKAa39Swc=
+github.com/klauspost/compress v1.15.12 h1:YClS/PImqYbn+UILDnqxQCZ3RehC9N318SU3kElDUEM=
+github.com/klauspost/compress v1.15.12/go.mod h1:QPwzmACJjUTFsnSHH934V6woptycfrDDJnH7hvFVbGM=
+github.com/klauspost/pgzip v1.2.5 h1:qnWYvvKqedOF2ulHpMG72XQol4ILEJ8k2wwRl/Km8oE=
+github.com/klauspost/pgzip v1.2.5/go.mod h1:Ch1tH69qFZu15pkjo5kYi6mth2Zzwzt50oCQKQE9RUs=
 github.com/oschwald/geoip2-golang v1.8.0 h1:KfjYB8ojCEn/QLqsDU0AzrJ3R5Qa9vFlx3z6SLNcKTs=
 github.com/oschwald/geoip2-golang v1.8.0/go.mod h1:R7bRvYjOeaoenAp9sKRS8GX5bJWcZ0laWO5+DauEktw=
 github.com/oschwald/maxminddb-golang v1.10.0 h1:Xp1u0ZhqkSuopaKmk1WwHtjF0H9Hd9181uj2MQ5Vndg=

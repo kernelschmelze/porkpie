@@ -150,13 +150,14 @@ func (p *Plugin) run() {
 
 			attachment := slack.Attachment{
 
-				Title: fmt.Sprintf("%s %s -> %s   %s %s",
+				Title: fmt.Sprintf("%s %s -> %s - %d %s %s",
 
 					data.GetProtocol(),
 					data.GetSource(),
 					data.GetDestination(),
-					data.MM.Country,
-					data.MM.City,
+					data.ASN.Number,
+					data.ASN.CountryCode,
+					data.ASN.Description,
 				),
 
 				Text: fmt.Sprintf("%s\n\ngid: %d sid: %d priority: %d impact: %d",

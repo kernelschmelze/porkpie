@@ -84,13 +84,9 @@ func (p *Plugin) do(v interface{}) error {
 			return nil
 		}
 
-		if data.IsLocal() { // DEBUG
-			return nil
-		}
-
 		timestamp := data.GetTime()
 
-		fmt.Printf("%s - %d:%d \t - %s %s -> %s \t - %d %s %s %s - %s\n",
+		fmt.Printf("%s - sid:%d gid:%d - %s %s -> %s - [%d] %s - %s (%d %s %s)\n",
 			timestamp.Format("2006-01-02 15:04:05.000000"),
 			data.GetGID(),
 			data.GetSID(),
@@ -102,10 +98,11 @@ func (p *Plugin) do(v interface{}) error {
 			data.GetPriority(),
 			data.SIDMap.Classification,
 
-			data.MM.Country,
-			data.MM.City,
-
 			data.SIDMap.Msg,
+
+			data.ASN.Number,
+			data.ASN.CountryCode,
+			data.ASN.Description,
 		)
 
 	}

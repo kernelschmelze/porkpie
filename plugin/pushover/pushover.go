@@ -156,13 +156,14 @@ func (p *Plugin) run() {
 				continue
 			}
 
-			msg := fmt.Sprintf("%s\n\n%s %s -> %s   %s %s\n\ngid: %d sid: %d priority: %d impact: %d",
+			msg := fmt.Sprintf("%s\n\n%s %s -> %s\n%d %s %s\n\ngid: %d sid: %d priority: %d impact: %d",
 				data.SIDMap.Msg,
 				data.GetProtocol(),
 				data.GetSource(),
 				data.GetDestination(),
-				data.MM.Country,
-				data.MM.City,
+				data.ASN.Number,
+				data.ASN.CountryCode,
+				data.ASN.Description,
 				data.GetGID(),
 				data.GetSID(),
 				data.GetPriority(),

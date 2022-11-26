@@ -3,6 +3,7 @@ package main
 import (
 	_ "github.com/kernelschmelze/porkpie/plugin/filter"
 	_ "github.com/kernelschmelze/porkpie/plugin/geoip"
+	_ "github.com/kernelschmelze/porkpie/plugin/ip2asn"
 	_ "github.com/kernelschmelze/porkpie/plugin/logger"
 	_ "github.com/kernelschmelze/porkpie/plugin/mail"
 	_ "github.com/kernelschmelze/porkpie/plugin/pushover"

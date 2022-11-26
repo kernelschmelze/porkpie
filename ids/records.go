@@ -17,13 +17,17 @@ type Record struct {
 	// sidmap
 	SIDMap SIDMapItem
 
-	// geo ip
-	//Country string
-	//City    string
-
+	// maxmind geo ip
 	MM struct {
 		Country string
 		City    string
+	}
+
+	// ip2asn
+	ASN struct {
+		Number      int
+		CountryCode string
+		Description string
 	}
 
 	// payload
