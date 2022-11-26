@@ -17,8 +17,9 @@ type config struct {
 
 type Plugin struct {
 	*plugin.PluginBase
-	guard  sync.RWMutex
-	lookup map[string][]asn
+	guard       sync.RWMutex
+	lookup      map[string][]asn
+	currentFile string
 }
 
 func init() {
@@ -31,6 +32,7 @@ func New() *Plugin {
 		plugin.NewPluginWithPriority(501),
 		sync.RWMutex{},
 		make(map[string][]asn),
+		"",
 	}
 
 	err := p.Init(plugin.PluginConfig{
@@ -89,8 +91,17 @@ func (p *Plugin) openDB(file string) {
 
 		log.Infof("%T load file '%s' successfull, took %s", p, file, time.Since(start))
 
+		if p.currentFile == file {
+			return
+		} else if len(p.currentFile) > 0 {
+			watcher.Remove(p.currentFile)
+			p.currentFile = ""
+		}
+
 		if err = watcher.Add(file, p.openDB); err != nil {
 			log.Errorf("%T watch file '%s' failed, err=%s", p, file, err)
+		} else {
+			p.currentFile = file
 		}
 
 	}
