@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "github.com/kernelschmelze/porkpie/plugin/alias"
 	_ "github.com/kernelschmelze/porkpie/plugin/filter"
 	_ "github.com/kernelschmelze/porkpie/plugin/geoip"
 	_ "github.com/kernelschmelze/porkpie/plugin/ip2asn"

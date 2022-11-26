@@ -11,6 +11,26 @@
   # https://iptoasn.com/data/ip2asn-combined.tsv.gz 
   db = "./ip2asn-combined.tsv.gz"
 
+[logger]
+
+  [logger.layout]
+  
+    format ="[%d] %s - %s %s -> %s - %s - %s - sid:%d gid:%d (%d %s %s)"
+    fields = [
+        "priority",
+        "time",
+        "protocol",
+        "source",
+        "destination",
+        "class",
+        "msg",
+        "sid",
+        "gid",
+        "asnnumber",
+        "asncountry",
+        "asndescription",
+    ]
+
 [mail]
   server = "127.0.0.1:25"
 

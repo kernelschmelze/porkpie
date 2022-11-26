@@ -3,8 +3,10 @@ package logger
 import (
 	"fmt"
 	"os"
+	"sync"
 
 	"github.com/kernelschmelze/pkg/plugin/plugin/base"
+	"github.com/kernelschmelze/porkpie/alias"
 	"github.com/kernelschmelze/porkpie/ids"
 
 	log "github.com/kernelschmelze/pkg/logger"
@@ -13,11 +15,14 @@ import (
 )
 
 type config struct {
+	Layout alias.Layout
 }
 
 type Plugin struct {
 	*plugin.PluginBase
-	isTTY bool
+	guard  sync.RWMutex
+	config config
+	isTTY  bool
 }
 
 func init() {
@@ -33,6 +38,8 @@ func New() *Plugin {
 
 	p := &Plugin{
 		plugin.NewPluginWithPriority(999),
+		sync.RWMutex{},
+		config{},
 		isTTY,
 	}
 
@@ -68,6 +75,25 @@ func (p *Plugin) stop() error {
 
 func (p *Plugin) configure(v interface{}) {
 
+	if c, ok := v.(*config); ok {
+
+		p.guard.Lock()
+		p.config = config{
+			Layout: c.Layout,
+		}
+		p.guard.Unlock()
+
+	}
+
+}
+
+func (p *Plugin) getLayout() alias.Layout {
+
+	p.guard.RLock()
+	layout := p.config.Layout
+	p.guard.RUnlock()
+
+	return layout
 }
 
 func (p *Plugin) do(v interface{}) error {
@@ -78,9 +104,25 @@ func (p *Plugin) do(v interface{}) error {
 
 	switch data := v.(type) {
 
+	case alias.Message:
+
+		layout := p.getLayout()
+
+		if !layout.IsValid() {
+			return nil // we have no valid customer layout, skip
+		}
+
+		fmt.Println(alias.Format(data, layout.Format, layout.Fields...))
+
 	case *ids.Record:
 
 		if !data.IsValid() || data.Drop {
+			return nil
+		}
+
+		layout := p.getLayout()
+
+		if layout.IsValid() { // we have a customer layout, skip default logging
 			return nil
 		}
 
@@ -88,8 +130,8 @@ func (p *Plugin) do(v interface{}) error {
 
 		fmt.Printf("%s - sid:%d gid:%d - %s %s -> %s - [%d] %s - %s (%d %s %s)\n",
 			timestamp.Format("2006-01-02 15:04:05.000000"),
-			data.GetGID(),
 			data.GetSID(),
+			data.GetGID(),
 
 			data.GetProtocol(),
 			data.GetSource(),
