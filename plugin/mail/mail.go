@@ -137,8 +137,8 @@ func (p *Plugin) do(v interface{}) error {
 			data.GetProtocol(),
 			data.GetSource(),
 			data.GetDestination(),
-			data.Country,
-			data.City,
+			data.MM.Country,
+			data.MM.City,
 
 			data.SIDMap.Classification,
 

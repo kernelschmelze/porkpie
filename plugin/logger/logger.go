@@ -84,6 +84,10 @@ func (p *Plugin) do(v interface{}) error {
 			return nil
 		}
 
+		if data.IsLocal() { // DEBUG
+			return nil
+		}
+
 		timestamp := data.GetTime()
 
 		fmt.Printf("%s - %d:%d \t - %s %s -> %s \t - %d %s %s %s - %s\n",
@@ -98,8 +102,8 @@ func (p *Plugin) do(v interface{}) error {
 			data.GetPriority(),
 			data.SIDMap.Classification,
 
-			data.Country,
-			data.City,
+			data.MM.Country,
+			data.MM.City,
 
 			data.SIDMap.Msg,
 		)

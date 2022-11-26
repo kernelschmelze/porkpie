@@ -33,7 +33,7 @@ func init() {
 func New() *Plugin {
 
 	p := &Plugin{
-		plugin.NewPlugin(),
+		plugin.NewPluginWithPriority(500),
 		nil,
 		sync.RWMutex{},
 		"",
@@ -189,8 +189,8 @@ func (p *Plugin) do(v interface{}) error {
 				}
 			}
 
-			data.Country = record.Country.IsoCode
-			data.City = city
+			data.MM.Country = record.Country.IsoCode
+			data.MM.City = city
 
 		}
 

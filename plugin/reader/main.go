@@ -145,6 +145,8 @@ func (p *Plugin) setBookmark(file string, offset int64) {
 
 func (p *Plugin) storeBookmark() {
 
+	return // DEBUG
+
 	if !p.bookmark.Changed {
 		return
 	}

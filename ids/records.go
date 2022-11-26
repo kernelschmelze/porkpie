@@ -18,8 +18,13 @@ type Record struct {
 	SIDMap SIDMapItem
 
 	// geo ip
-	Country string
-	City    string
+	//Country string
+	//City    string
+
+	MM struct {
+		Country string
+		City    string
+	}
 
 	// payload
 	eventRecord     *unified2.EventRecord

@@ -155,8 +155,8 @@ func (p *Plugin) run() {
 					data.GetProtocol(),
 					data.GetSource(),
 					data.GetDestination(),
-					data.Country,
-					data.City,
+					data.MM.Country,
+					data.MM.City,
 				),
 
 				Text: fmt.Sprintf("%s\n\ngid: %d sid: %d priority: %d impact: %d",
