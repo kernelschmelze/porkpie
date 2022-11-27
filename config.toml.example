@@ -48,6 +48,14 @@
   channel = "ids"
   token = ""
 
+  # [slack.layout.title]
+  #   fields = ["protocol","source","destination","asnnumber","asncountry","asndescription"]
+  #   format = "%s %s -> %s - %d %s %s"
+
+  # [slack.layout.text]
+  #   fields = ["class","gid","sid","priority","impact"]
+  #   format = "%s\n\ngid: %d sid: %d priority: %d impact: %d"
+
 [pushover]
 
   app = "API Token"

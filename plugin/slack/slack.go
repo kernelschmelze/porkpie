@@ -5,7 +5,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kernelschmelze/pkg/atom"
 	"github.com/kernelschmelze/pkg/plugin/plugin/base"
+	"github.com/kernelschmelze/porkpie/alias"
 	"github.com/kernelschmelze/porkpie/ids"
 
 	log "github.com/kernelschmelze/pkg/logger"
@@ -16,13 +18,21 @@ import (
 type config struct {
 	Token   string
 	Channel string
+	Layout  layout
+}
+
+type layout struct {
+	Title alias.Layout
+	Text  alias.Layout
 }
 
 type Plugin struct {
 	*plugin.PluginBase
-	data  chan *ids.Record
-	setup chan *config
-	kill  chan struct{}
+	customer atom.Bool
+	alias    chan alias.Message
+	data     chan *ids.Record
+	setup    chan *config
+	kill     chan struct{}
 }
 
 func init() {
@@ -33,6 +43,8 @@ func New() *Plugin {
 
 	p := &Plugin{
 		plugin.NewPluginWithPriority(900),
+		atom.Bool{},
+		make(chan alias.Message, 50),
 		make(chan *ids.Record, 50),
 		make(chan *config, 10),
 		make(chan struct{}),
@@ -84,19 +96,41 @@ func (p *Plugin) do(v interface{}) error {
 
 	switch data := v.(type) {
 
+	case alias.Message:
+
+		if data.Local {
+			return nil
+		}
+
+		if len(data.SIDMsg) == 0 {
+			return nil
+		}
+
+		if !p.customer.IsSet() {
+			return nil
+		}
+
+		select {
+		case p.alias <- data:
+		case <-time.After(250 * time.Millisecond):
+			log.Errorf("%T alias channel full, drop message", p)
+		}
+
 	case *ids.Record:
 
 		if !data.IsValid() || data.Drop {
 			return nil
 		}
 
-		// ignore internal packet
-
 		if data.IsLocal() {
 			return nil
 		}
 
 		if len(data.SIDMap.Msg) == 0 {
+			return nil
+		}
+
+		if p.customer.IsSet() {
 			return nil
 		}
 
@@ -115,6 +149,7 @@ func (p *Plugin) run() {
 
 	var channel string
 	api := (*slack.Client)(nil)
+	customer := layout{}
 
 	for {
 
@@ -129,7 +164,12 @@ func (p *Plugin) run() {
 				continue
 			}
 
+			// reset
+
 			api = nil
+			p.customer.Set(false)
+
+			// re-configure
 
 			channel = strings.TrimSpace(config.Channel)
 			channel = strings.TrimLeft(channel, "#")
@@ -138,7 +178,46 @@ func (p *Plugin) run() {
 				continue
 			}
 
+			if config.Layout.Title.IsValid() && config.Layout.Text.IsValid() {
+				customer = config.Layout
+				p.customer.Set(true)
+			}
+
 			api = slack.New(config.Token)
+
+		case data := <-p.alias:
+
+			if api == nil {
+				continue
+			}
+
+			title := fmt.Sprint(alias.Format(data, customer.Title.Format, customer.Title.Fields...))
+			text := fmt.Sprint(alias.Format(data, customer.Text.Format, customer.Text.Fields...))
+
+			attachment := slack.Attachment{
+				Title:   title,
+				Text:    text,
+				Pretext: data.Time,
+			}
+
+			var icon, msg string
+
+			icon = "grey_exclamation"
+
+			msg = data.SIDMsg
+
+			if len(icon) > 0 {
+				msg = ":" + icon + ": " + msg
+			}
+
+			_, _, err := api.PostMessage("#"+channel,
+				slack.MsgOptionText(msg, false),
+				slack.MsgOptionAttachments(attachment),
+			)
+
+			if err != nil {
+				log.Errorf("%T post message failed, err=%s", p, err)
+			}
 
 		case data := <-p.data:
 
