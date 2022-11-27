@@ -2,10 +2,10 @@ package mail
 
 import (
 	"fmt"
-	//"regexp"
 	"sync"
 
 	"github.com/kernelschmelze/pkg/plugin/plugin/base"
+	"github.com/kernelschmelze/porkpie/alias"
 	"github.com/kernelschmelze/porkpie/ids"
 
 	log "github.com/kernelschmelze/pkg/logger"
@@ -15,6 +15,12 @@ type config struct {
 	Server string
 	From   Addr
 	To     Addr
+	Layout layout
+}
+
+type layout struct {
+	Subject alias.Layout
+	Body    alias.Layout
 }
 
 type Addr struct {
@@ -86,6 +92,7 @@ func (p *Plugin) configure(v interface{}) {
 				Name:    c.To.Name,
 				Address: c.To.Address,
 			},
+			Layout: c.Layout,
 		}
 
 		p.guard.Unlock()
@@ -97,6 +104,38 @@ func (p *Plugin) configure(v interface{}) {
 func (p *Plugin) do(v interface{}) error {
 
 	switch data := v.(type) {
+
+	case alias.Message:
+
+		p.guard.RLock()
+		config := p.config
+		p.guard.RUnlock()
+
+		if len(config.Server) == 0 || len(config.From.Name) == 0 || len(config.From.Address) == 0 || len(config.To.Name) == 0 || len(config.To.Address) == 0 {
+			return nil
+		}
+
+		if !config.Layout.Body.IsValid() {
+			return nil
+		}
+
+		body := fmt.Sprint(alias.Format(data, config.Layout.Body.Format, config.Layout.Body.Fields...))
+
+		subject := fmt.Sprintf("[%d] %s",
+			data.Impact,
+			data.SIDMsg,
+		)
+
+		if config.Layout.Subject.IsValid() {
+			subject = fmt.Sprint(alias.Format(data, config.Layout.Subject.Format, config.Layout.Subject.Fields...))
+		}
+
+		from := Address(config.From.Name, config.From.Address)
+		to := Address(config.To.Name, config.To.Address)
+
+		if err := SendMail(config.Server, from, subject, body, []string{to}); err != nil {
+			log.Errorf("%T send mail failed, err=%s", p, err)
+		}
 
 	case *ids.Record:
 
@@ -112,6 +151,10 @@ func (p *Plugin) do(v interface{}) error {
 			return nil
 		}
 
+		if config.Layout.Body.IsValid() {
+			return nil
+		}
+
 		timestamp := data.GetTime()
 
 		from := Address(config.From.Name, config.From.Address)
@@ -121,15 +164,6 @@ func (p *Plugin) do(v interface{}) error {
 			data.GetImpact(),
 			data.SIDMap.Msg,
 		)
-
-		// var payload string
-
-		// body := fmt.Sprintf("%s\n%d:%d %s %s\n%s -> %s %s %s\n\n%s",
-		// 	timestamp.Format("2006-01-02 15:04:05.000000"),
-		// 	data.GetGID(), data.GetSID(), data.GetProtocol(), data.SIDMap.Classification,
-		// 	data.GetSource(), data.GetDestination(), data.Country, data.City,
-		// 	payload,
-		// )
 
 		body := fmt.Sprintf("%s\n\n%s %s -> %s \n%d %s %s\n%s\ngid: %d sid: %d priority: %d impact: %d",
 			timestamp.Format("2006-01-02 15:04:05.000000"),
@@ -158,9 +192,3 @@ func (p *Plugin) do(v interface{}) error {
 
 	return nil
 }
-
-// func (p *Plugin) getPrintable(data []byte) string {
-// 	re := regexp.MustCompile("[^a-zA-Z0-9]+")
-// 	str := re.ReplaceAllString(string(data[:]), ".")
-// 	return str
-// }

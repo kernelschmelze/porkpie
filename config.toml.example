@@ -26,6 +26,14 @@
     address = "root@localhost"
     name = "root"
 
+  # [mail.layout.subject]
+  #   fields = ["impact","msg"]
+  #   format = "[%d] %s"
+
+  # [mail.layout.body]
+  #   fields = ["time","class","protocol","source","destination","asncountry","asndescription","asnnumber","gid","sid","priority","impact"]
+  #   format = "%s\n\n%s\n\n%s %s -> %s\n\n%s %s %d\n\ngid: %d sid: %d priority: %d impact: %d"
+
 [reader]
 
   fileprefix = "snort.u2"
