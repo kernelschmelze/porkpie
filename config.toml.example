@@ -1,37 +1,21 @@
 
 [filter]
+
   pattern = ["1:2525017", "1:10000001", "1:2525016"]
 
 [geoip]
+
   geodb = "./GeoLite2-City.mmdb"
 
 [ip2asn]
+
   # https://iptoasn.com/data/ip2asn-v6.tsv.gz
   # https://iptoasn.com/data/ip2asn-v4.tsv.gz
   # https://iptoasn.com/data/ip2asn-combined.tsv.gz 
   db = "./ip2asn-combined.tsv.gz"
 
-[logger]
-
-  [logger.layout]
-  
-    format ="[%d] %s - %s %s -> %s - %s - %s - sid:%d gid:%d (%d %s %s)"
-    fields = [
-        "priority",
-        "time",
-        "protocol",
-        "source",
-        "destination",
-        "class",
-        "msg",
-        "sid",
-        "gid",
-        "asnnumber",
-        "asncountry",
-        "asndescription",
-    ]
-
 [mail]
+
   server = "127.0.0.1:25"
 
   [mail.from]
@@ -43,17 +27,34 @@
     name = "root"
 
 [reader]
+
   fileprefix = "snort.u2"
   path = "/var/log/snort"
 
 [sidmap]
+
   maps = ["/etc/snort/sid-msg.map"]
 
 [slack]
+
   channel = "ids"
   token = ""
 
 [pushover]
+
   app = "API Token"
   user = "Your User Key"
 
+  # [pushover.layout.title]
+  #   fields = ["class"]
+  #   format = "%s"
+
+  # [pushover.layout.message]
+  #   fields = ["msg","protocol","source","destination","asncountry","asndescription","asnnumber","gid","sid","priority","impact"]
+  #   format = "%s\n\n%s %s -> %s\n%s %s %d\n\ngid: %d sid: %d priority: %d impact: %d"
+
+[logger]
+
+  # [logger.layout]
+  #   fields = ["priority", "time", "protocol", "source", "destination", "class", "msg", "sid", "gid", "asnnumber", "asncountry", "asndescription"]
+  #   format = "[%d] %s - %s %s -> %s - %s - %s - sid:%d gid:%d (%d %s %s)"

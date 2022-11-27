@@ -18,6 +18,7 @@ type Layout struct {
 
 type Message struct {
 	Local             bool
+	Timestamp         int64
 	Time              string `pp:"time"`
 	EventID           uint32 `pp:"event"`
 	Priority          uint32 `pp:"priority"`
@@ -45,6 +46,7 @@ func init() {
 func Get(r *ids.Record) Message {
 	return Message{
 		Local:             r.IsLocal(),
+		Timestamp:         r.GetTime().Unix(),
 		Time:              r.GetTime().Format("2006-01-02 15:04:05.000000"),
 		EventID:           r.EventID,
 		Priority:          r.GetPriority(),
