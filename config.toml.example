@@ -12,6 +12,9 @@
   # https://iptoasn.com/data/ip2asn-v6.tsv.gz
   # https://iptoasn.com/data/ip2asn-v4.tsv.gz
   # https://iptoasn.com/data/ip2asn-combined.tsv.gz 
+  # https://iptoasn.com/data/ip2country-v4.tsv.gz
+  # https://iptoasn.com/data/ip2country-v6.tsv.gz
+  
   db = "./ip2asn-combined.tsv.gz"
 
 [mail]

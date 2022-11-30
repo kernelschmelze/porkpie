@@ -78,26 +78,43 @@ func (p *Plugin) readDB(db string) error {
 
 		data := strings.Split(string(line), "\t")
 
-		if len(data) < 5 {
+		item := asn{}
+
+		switch len(data) {
+
+		case 3:
+
+			item = asn{
+				data[0],
+				data[1],
+				0,
+				strings.TrimSpace(data[2]),
+				"",
+			}
+
+		case 5:
+
+			number, err := strconv.Atoi(data[2])
+			if err == nil && number == 0 {
+				continue
+			}
+
+			item = asn{
+				data[0],
+				data[1],
+				number,
+				data[3],
+				strings.TrimSpace(data[4]),
+			}
+
+		default:
 			continue
+
 		}
 
-		number, err := strconv.Atoi(data[2])
-		if err == nil && number == 0 {
-			continue
-		}
+		index := p.getTableIndex(item.Start)
 
-		asn := asn{
-			data[0],
-			data[1],
-			number,
-			data[3],
-			strings.TrimSpace(data[4]), // expensive op
-		}
-
-		index := p.getTableIndex(data[0])
-
-		p.lookup[index] = append(p.lookup[index], asn)
+		p.lookup[index] = append(p.lookup[index], item)
 
 	}
 
