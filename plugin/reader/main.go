@@ -29,6 +29,7 @@ type Plugin struct {
 	jobs       chan job
 	kill       chan bool
 	killReader chan bool
+	guard      sync.RWMutex
 	wgJobs     sync.WaitGroup
 	wgReader   sync.WaitGroup
 }
@@ -46,6 +47,7 @@ func New() *Plugin {
 		make(chan job, 1024),
 		nil,
 		nil,
+		sync.RWMutex{},
 		sync.WaitGroup{},
 		sync.WaitGroup{},
 	}
@@ -134,6 +136,9 @@ func (p *Plugin) configure(v interface{}) {
 
 func (p *Plugin) setBookmark(file string, offset int64) {
 
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
 	if p.bookmark.File == file && p.bookmark.Offset == offset {
 		return
 	}
@@ -144,6 +149,9 @@ func (p *Plugin) setBookmark(file string, offset int64) {
 }
 
 func (p *Plugin) storeBookmark() {
+
+	p.guard.Lock()
+	defer p.guard.Unlock()
 
 	if !p.bookmark.Changed {
 		return
