@@ -26,6 +26,7 @@ type Record struct {
 	// ip2asn
 	ASN struct {
 		Number      int
+		Country     string
 		CountryCode string
 		Description string
 	}

@@ -112,6 +112,10 @@ func (p *Plugin) do(v interface{}) error {
 			return nil // we have no valid customer layout, skip
 		}
 
+		if data.Local {
+			return nil
+		}
+
 		fmt.Println(alias.Format(data, layout.Format, layout.Fields...))
 
 	case *ids.Record:

@@ -35,6 +35,7 @@ type Message struct {
 	MMCountry         string `pp:"mmcountry"`
 	MMCity            string `pp:"mmcity"`
 	ASNNumber         int    `pp:"asnnumber"`
+	ASNCountry        string `pp:"asncountry"`
 	ASNCountryCode    string `pp:"asncountrycode"`
 	ASNDescription    string `pp:"asndescription"`
 }
@@ -63,6 +64,7 @@ func Get(r *ids.Record) Message {
 		MMCountry:         r.MM.Country,
 		MMCity:            r.MM.City,
 		ASNNumber:         r.ASN.Number,
+		ASNCountry:        r.ASN.Country,
 		ASNCountryCode:    r.ASN.CountryCode,
 		ASNDescription:    r.ASN.Description,
 	}

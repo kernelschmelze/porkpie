@@ -130,6 +130,7 @@ func (p *Plugin) do(v interface{}) error {
 			data.ASN.Number = asn.Number
 			data.ASN.CountryCode = asn.CountryCode
 			data.ASN.Description = asn.Description
+			data.ASN.Country = p.getCountryName(asn.CountryCode)
 		}
 
 	}
