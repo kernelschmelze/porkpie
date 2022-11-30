@@ -31,8 +31,8 @@
   #   format = "[%d] %s"
 
   # [mail.layout.body]
-  #   fields = ["time","class","protocol","source","destination","asncountry","asndescription","asnnumber","gid","sid","priority","impact"]
-  #   format = "%s\n\n%s\n\n%s %s -> %s\n\n%s %s %d\n\ngid: %d sid: %d priority: %d impact: %d"
+  #   fields = ["time","class","protocol","source","destination","asncountrycode","asndescription","gid","sid","priority","impact"]
+  #   format = "%s\n\n%s\n\n%s %s -> %s\n\n%s %s\n\ngid: %d sid: %d priority: %d impact: %d"
 
 [reader]
 
@@ -49,7 +49,7 @@
   token = ""
 
   # [slack.layout.title]
-  #   fields = ["protocol","source","destination","asnnumber","asncountry","asndescription"]
+  #   fields = ["protocol","source","destination","asnnumber","asncountrycode","asndescription"]
   #   format = "%s %s -> %s - %d %s %s"
 
   # [slack.layout.text]
@@ -66,11 +66,11 @@
   #   format = "%s"
 
   # [pushover.layout.message]
-  #   fields = ["msg","protocol","source","destination","asncountry","asndescription","asnnumber","gid","sid","priority","impact"]
+  #   fields = ["msg","protocol","source","destination","asncountrycode","asndescription","asnnumber","gid","sid","priority","impact"]
   #   format = "%s\n\n%s %s -> %s\n%s %s %d\n\ngid: %d sid: %d priority: %d impact: %d"
 
 [logger]
 
   # [logger.layout]
-  #   fields = ["priority", "time", "protocol", "source", "destination", "class", "msg", "sid", "gid", "asnnumber", "asncountry", "asndescription"]
+  #   fields = ["priority", "time", "protocol", "source", "destination", "class", "msg", "sid", "gid", "asnnumber", "asncountrycode", "asndescription"]
   #   format = "[%d] %s - %s %s -> %s - %s - %s - sid:%d gid:%d (%d %s %s)"

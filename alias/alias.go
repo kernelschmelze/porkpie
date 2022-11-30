@@ -35,7 +35,7 @@ type Message struct {
 	MMCountry         string `pp:"mmcountry"`
 	MMCity            string `pp:"mmcity"`
 	ASNNumber         int    `pp:"asnnumber"`
-	ASNCountryCode    string `pp:"asncountry"`
+	ASNCountryCode    string `pp:"asncountrycode"`
 	ASNDescription    string `pp:"asndescription"`
 }
 
