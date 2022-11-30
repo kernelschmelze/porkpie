@@ -5,6 +5,9 @@ import (
 )
 
 func (p *Plugin) getCountryName(code string) string {
+	if len(code) != 2 {
+		return ""
+	}
 	code = strings.ToUpper(code)
 	return countries[code]
 }
